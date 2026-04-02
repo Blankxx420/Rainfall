@@ -1,0 +1,17 @@
+services:
+  kali-rainfall:
+    build: .
+    container_name: rainfall_lab
+    volumes:
+      - .:/root/rainfall
+    # Les privilèges sont cruciaux pour GDB et l'analyse de mémoire
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    # Pour garder le conteneur allumé
+    stdin_open: true
+    tty: true
+    # Optionnel : si tu veux forcer l'architecture 32 bits au niveau docker
+    platform: linux/amd64
