@@ -1,5 +1,13 @@
-# .gitignore
-*.core
+core
 core.*
-.DS_Store
+*.core
+
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+
+# OS & IDE
+.DS_Store
+.vscode/
+.idea/
