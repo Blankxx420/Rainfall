@@ -6,7 +6,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && apt-get update
 
 # 2. Installation des outils de compilation et de debug
-RUN apt-get install -y --no-install-recommends \
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
     build-essential \
     gcc-multilib \
     gdb \
@@ -23,7 +25,7 @@ RUN apt-get install -y --no-install-recommends \
     hexedit \
     nasm \
     libc6:i386 \
-    libncurses5:i386 \
+    libncurses6:i386 \
     libstdc++6:i386 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
