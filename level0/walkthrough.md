@@ -28,6 +28,14 @@ voici les informations que l'on peut en retirer
 
 -   🎯 **PIE (No PIE)** : Le code du programme lui-même n'est pas "Position Independent". Ses fonctions (comme le main) seront toujours chargées à des adresses mémoires fixes.
 
+Je regarde les droits sur le binaire
+```console
+ls -l
+total 732
+-rwsr-x---+ 1 level1 users 747441 Mar  6  2016 level0
+```
+on peut voir que le binaire prend les droits du propriétaire lors de l'execution au cause du bit SUID (Set-User-ID).
+
 Je test ensuite l'excutable
     
 ``` console
@@ -79,3 +87,50 @@ le programme attend un argument comme je n'est pas mis d'argument **argv[1]** es
 
 Nous savons que notre programme requiert minimum un arguments et que cet argument doit probablement etre un **int** on va devoir regarder le code en Assembleur avec GDB pour avoir plus d'information
 
+```console
+(gdb) disas main
+Dump of assembler code for function main:
+   0x08048ec0 <+0>:	push   %ebp
+   0x08048ec1 <+1>:	mov    %esp,%ebp
+   0x08048ec3 <+3>:	and    $0xfffffff0,%esp
+   0x08048ec6 <+6>:	sub    $0x20,%esp
+   0x08048ec9 <+9>:	mov    0xc(%ebp),%eax
+   0x08048ecc <+12>:	add    $0x4,%eax
+   0x08048ecf <+15>:	mov    (%eax),%eax
+   0x08048ed1 <+17>:	mov    %eax,(%esp)
+   0x08048ed4 <+20>:	call   0x8049710 <atoi>
+   0x08048ed9 <+25>:	cmp    $0x1a7,%eax
+```
+On peut voir une comparaison juste apres le call de atoi c'est notre valeur de int que nous cherchons **%eax** est la valeur de retour de atoi donc **$0x1a7** est notre nombre.
+
+Le signe $ indique que c'est une valeur brute (une constante), et le 0x indique que c'est un nombre écrit en hexadécimal (base 16).
+
+Pour retrouver la valeur on va le faire avec echo
+
+```console
+echo $((0x1a7))
+423
+```
+
+On relance notre programme avec notre valeur
+```console
+./level0 423
+$
+```
+ici un bash on verifie nos droit
+```console
+id
+uid=2030(level1) gid=2020(level0) groups=2030(level1),100(users),2020(level0)
+
+```
+
+nous avons bien obtenu les droits du user level1 il ne reste plus que a afficher le mot de passe
+
+```console
+cat /home/user/level1/.pass
+???????????????????????????????????????
+```
+
+Dernière étape reconstruire le binaire
+
+Vous pouvez retrouver le binaire reconstruit en C dans le dossier source 
